@@ -1,0 +1,126 @@
+.registration__wrapper {
+	max-width: 1200px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.registration__block {
+	max-width: 450px;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 60px;
+	background-color: rgb(255, 255, 255);
+	color: rgba(0, 0, 0, 0.87);
+	transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+	border-radius: 4px;
+	border: 1px solid #dedede;
+}
+
+.registration__section {
+	margin-top: 30px;
+}
+
+.registration__heading {
+	font-weight: 700;
+	font-size: 1.5rem;
+	line-height: 1.334;
+	letter-spacing: 0em;
+	width: 100%;
+	text-align: center;
+}
+
+.registration__input {
+	padding: 16.5px 14px;
+	width: 100%;
+	animation-duration: 10ms;
+	border: 1px solid rgba(0, 0, 0, 0.23);
+	border-radius: 4px;
+	font-weight: 400;
+	font-size: 18px;
+	line-height: 21px;
+	transition: top 0.5s ease;
+}
+
+.registration__active ~ .registration__sign {
+	top: 0;
+	font-size: 15px;
+	background-color: #fff;
+	z-index: 1;
+	transition: top 0.5s ease;
+}
+
+.registration__active:focus ~ .registration__sign {
+	color: rgba(67, 97, 238);
+}
+
+.registration__sign {
+	color: rgba(0, 0, 0, 0.6);
+	font-weight: 400;
+	font-size: 18px;
+	line-height: 21px;
+	position: absolute;
+	left: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+	pointer-events: none;
+	transition: color 200ms cubic-bezier(0, 0, 0.2, 1) 0ms,
+		transform 200ms cubic-bezier(0, 0, 0.2, 1) 0ms,
+		font-size 200ms cubic-bezier(0, 0, 0.2, 1) 0ms;
+}
+
+.registration__label {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	position: relative;
+	margin-top: 30px;
+}
+
+.registration__fieldset {
+	display: flex;
+	flex-direction: column;
+}
+
+.registration__label:hover .registration__input {
+	border: 1px solid rgba(67, 97, 238);
+}
+
+.registration__label .registration__input:focus {
+	border: 1px solid rgba(67, 97, 238);
+}
+
+.registration__send {
+	border-radius: 4px;
+	padding: 16px;
+	width: 100%;
+	background-color: rgb(67, 97, 238);
+	transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+		box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+		border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+		color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+.registration__send .registration__text {
+	color: white;
+}
+
+.registration__send:disabled {
+	background-color: rgba(0, 0, 0, 0.12);
+	pointer-events: none;
+	cursor: default;
+}
+
+.registration__text {
+	color: rgba(0, 0, 0, 0.26);
+	font-weight: 400;
+	font-size: 18px;
+	line-height: 22px;
+}
+
+.registration__error {
+	color: rgb(220, 11, 11);
+	margin-top: 10px;
+	font-weight: 400;
+	font-size: 17px;
+	margin-left: 5px;
+}
