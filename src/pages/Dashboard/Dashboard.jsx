@@ -1,45 +1,56 @@
+import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import api, { removeToken } from '../../api'
+import { removeToken } from '../../api'
 import Sidebar from '../../components/Sidebar/Sidebar'
-import { logoutUser, setFiles } from '../../redux/actions'
+import { logoutUser, selectFiles, setFiles } from '../../redux/filesSlice'
 import styles from './dashboard.module.css'
 
 export default function Dashboard() {
-	
 	const dispatch = useDispatch()
 	const [isActive, setIsActive] = useState(false)
-	const filesData = useSelector(state => state.files)
-	const files = filesData.files || [];
+	const files = useSelector(selectFiles); // Измените эту строку
+	const filesLength = files ? files.length : 0
 
 	const handleLogout = () => {
-		// Вызываем action для выхода пользователя
 		dispatch(logoutUser())
 		removeToken()
 	}
 
 	const handleLinkClick = () => {
-		// Устанавливаем флаг isActive в true при клике
 		setIsActive(true)
 	}
 
+	const handleFileUpload = (uploadedFiles) => {
+		console.log('Uploaded Files:', uploadedFiles);
+	
+		const newFiles = uploadedFiles.map(file => ({
+			id: file.id,
+			url: file.url,
+			// Другие свойства файла, которые могут быть полезными
+		}));
+	
+		dispatch(setFiles([...files, ...newFiles])); // Обновите также строку с setFiles
+	};
+
 	useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.get('/api/media');
-        dispatch(setFiles(response.data.files));
-      } catch (error) {
-        console.error('Ошибка при получении файлов:', error);
-      }
-    };
+		console.log('Files from Redux store:', files); // Добавьте эту строку
+	
+		const fetchData = async () => {
+			try {
+				const response = await axios.get('https://615aa29e26d29508.mokky.dev/uploads');
+				console.log('Response from server:', response.data);
+				dispatch(setFiles(response.data));
+			} catch (error) {
+				console.error('Ошибка при получении файлов:', error);
+			}
+		};
+	
+		fetchData();
+	}, [dispatch]);
 
-		fetchData()
-	}, [dispatch])
-
-	const handleFileUpload = uploadedFile => {
-		dispatch(setFiles(prevFiles => [...prevFiles, uploadedFile]))
-	}
+	console.log('Files from Redux store:', files) // Добавим эту строку для отладки
 
 	return (
 		<section className={styles.dashboard__section}>
@@ -74,9 +85,8 @@ export default function Dashboard() {
 
 						<div className={styles.dashboard__right}>
 							<Link
-								className={`${styles.dashboard__link} ${
-									isActive ? styles.dashboard__active : ''
-								}`}
+								className={`${styles.dashboard__link} ${isActive ? styles.dashboard__active : ''
+									}`}
 								onClick={handleLinkClick}
 							>
 								<div className={styles.dashboard__image}>
@@ -109,14 +119,19 @@ export default function Dashboard() {
 			<aside className={styles.dashboard__aside}>
 				<Sidebar onFileUpload={handleFileUpload} />
 				<div className={styles.dashboard__uploads}>
-					<h1>TEST</h1>
-					<ul>
-          {Array.isArray(files) ? (
-            files.map((file) => <li key={file.id}>{file.name}</li>)
-          ) : (
-            <li>No files available</li>
-          )}
-        </ul>
+					<ul className={styles.dashboard__flex}>
+						{files && files.length > 0 ? (
+							files.map((file, index) => (
+								<li key={index}>
+									<div className={styles.dashboard__block}>
+										<img className={styles.dashboard__img} src={file.url} alt={`Image ${index}`} />
+									</div>
+								</li>
+							))
+						) : (
+							<li>No files available</li>
+						)}
+					</ul>
 				</div>
 			</aside>
 		</section>

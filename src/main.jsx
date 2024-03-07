@@ -9,6 +9,12 @@ import Dashboard from './pages/Dashboard/Dashboard'
 import ErrorPage from './pages/NotFound/NotFound'
 import Registration from './pages/Registration/Registration'
 import store from './redux/store'
+
+
+
+
+
+
 const router = createBrowserRouter([
 	{
 		path: '/',

@@ -1,7 +1,10 @@
-// src/redux/store.js
-import { createStore } from 'redux'
-import rootReducer from './reducers'
+import { configureStore } from '@reduxjs/toolkit'
+import filesReducer from './filesSlice'
 
-const store = createStore(rootReducer)
+const store = configureStore({
+  reducer: {
+    files: filesReducer,
+  },
+});
 
-export default store
+export default store;

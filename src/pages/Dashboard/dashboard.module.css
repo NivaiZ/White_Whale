@@ -106,7 +106,14 @@
 .dashboard__right .dashboard__link {
 	margin-right: 0;
 }
-
+.dashboard__flex {
+	display: flex;
+}
+.dashboard__img {
+	width: 200px;
+	height: 200px;
+	object-fit: contain;
+}
 .dashboard__image {
 	display: -webkit-box;
 	display: -ms-flexbox;
