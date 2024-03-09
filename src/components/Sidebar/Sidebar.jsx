@@ -1,31 +1,32 @@
 import axios from 'axios'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { setFiles } from '../../redux/filesSlice'
+import { incrementFileCount, selectFileCount, setFiles } from '../../redux/filesSlice'
+
+import Loader from '../Loader/Loader'
 import styles from './sidebar.module.css'
 
-export default function Sidebar ({ onFileUpload }){
+export default function Sidebar({ onFileUpload }) {
   const dispatch = useDispatch();
-  const files = useSelector((state) => state.files.files);
-
+  const fileCount = useSelector((state) => selectFileCount(state));
+  const inputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
 
   const handleFileChange = async (e) => {
     try {
       const file = e.target.files[0];
-      console.log('File selected:', file);
-  
+
       if (!file) {
         console.error('Файл не выбран');
         return;
       }
-  
+
       setUploading(true);
-  
+
       const formData = new FormData();
       formData.append('file', file);
-  
+
       const token = localStorage.getItem('token');
       const response = await axios.post(
         'https://615aa29e26d29508.mokky.dev/uploads',
@@ -37,21 +38,25 @@ export default function Sidebar ({ onFileUpload }){
           },
         }
       );
-  
+
+      console.log('Response from server:', response.data);
+
       if (Array.isArray(response.data)) {
-        // Если response.data - массив, получаем массив объектов
-        const updatedFiles = response.data.map(file => ({
+        const newFiles = response.data.map((file) => ({
           id: file.id,
           url: file.url,
-          // Другие свойства файла, которые могут быть полезными
         }));
-        dispatch(setFiles(updatedFiles));
-        onFileUpload(updatedFiles);
+
+        dispatch(setFiles(newFiles));
+        dispatch(incrementFileCount(newFiles.length));
+
         console.log('Файлы успешно загружены!');
       } else if (response.data && response.data.url) {
-        // Если response.data - объект, добавляем его URL в массив
-        dispatch(setFiles([{ id: response.data.id, url: response.data.url }]));
-        onFileUpload([{ id: response.data.id, url: response.data.url }]);
+        const newFile = { id: response.data.id, url: response.data.url };
+
+        dispatch(setFiles([newFile]));
+        dispatch(incrementFileCount(1));
+
         console.log('Файл успешно загружен!');
       } else {
         console.error('Некорректный ответ от сервера:', response.data);
@@ -92,16 +97,17 @@ export default function Sidebar ({ onFileUpload }){
       );
 
       console.log('Файл успешно загружен!');
-      const updatedFiles = response.data.files.map(file => ({
+      const newFiles = response.data.files.map((file) => ({
         name: file.name,
         lastModified: file.lastModified,
         // Другие свойства файла, которые вам нужны
       }));
-      dispatch(setFiles(updatedFiles));
+
+      dispatch(setFiles(newFiles));
+      setUpdatedFiles(newFiles);
       onFileUpload(response.data);
     } catch (error) {
       console.error('Ошибка при загрузке файла:', error);
-      // Добавьте более детальную обработку ошибок
     } finally {
       setUploading(false);
     }
@@ -131,10 +137,11 @@ export default function Sidebar ({ onFileUpload }){
               <path d='M440-200h80v-167l64 64 56-57-160-160-160 160 57 56 63-63v167ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z' />
             </svg>
             <span className={styles.sidebar__sign}>
-              {uploading ? 'Загрузка...' : 'Перетащите файл сюда'}
+              {uploading ? <Loader /> : fileCount > 10 ? 'Макс. 10 файлов' : `Перетащите файл сюда (${fileCount}/10)`}
             </span>
           </div>
           <input
+            ref={inputRef}
             className={styles.sidebar__upload}
             type='file'
             name='dashboard__file'
@@ -195,5 +202,5 @@ export default function Sidebar ({ onFileUpload }){
         </li>
       </ul>
     </div>
-  );
+  )
 }

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { removeToken } from '../../api'
 import Sidebar from '../../components/Sidebar/Sidebar'
+import { FileCounter } from '../../components/fileCounter/fileCounter'
 import { logoutUser, selectFiles, setFiles } from '../../redux/filesSlice'
 import styles from './dashboard.module.css'
 
@@ -28,14 +29,13 @@ export default function Dashboard() {
 		const newFiles = uploadedFiles.map(file => ({
 			id: file.id,
 			url: file.url,
-			// Другие свойства файла, которые могут быть полезными
 		}));
 	
-		dispatch(setFiles([...files, ...newFiles])); // Обновите также строку с setFiles
+		dispatch(setFiles([...files, ...newFiles]));
 	};
 
 	useEffect(() => {
-		console.log('Files from Redux store:', files); // Добавьте эту строку
+		console.log('Files from Redux store:', files);
 	
 		const fetchData = async () => {
 			try {
@@ -50,7 +50,7 @@ export default function Dashboard() {
 		fetchData();
 	}, [dispatch]);
 
-	console.log('Files from Redux store:', files) // Добавим эту строку для отладки
+	console.log('Files from Redux store:', files) 
 
 	return (
 		<section className={styles.dashboard__section}>
@@ -119,6 +119,7 @@ export default function Dashboard() {
 			<aside className={styles.dashboard__aside}>
 				<Sidebar onFileUpload={handleFileUpload} />
 				<div className={styles.dashboard__uploads}>
+				<FileCounter count={filesLength} />
 					<ul className={styles.dashboard__flex}>
 						{files && files.length > 0 ? (
 							files.map((file, index) => (
