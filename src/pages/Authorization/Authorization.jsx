@@ -89,7 +89,7 @@ export default function Authorization() {
 
 		try {
 			const response = await api.post(
-				'https://js-test.kitactive.ru/api/login',
+				'https://615aa29e26d29508.mokky.dev/auth',
 				{
 					email: emailInputValue,
 					password: passwordInputValue,

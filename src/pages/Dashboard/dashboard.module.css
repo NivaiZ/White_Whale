@@ -114,10 +114,54 @@
 	gap: 20px;
 }
 
+.dashboard__block {
+	display: flex;
+	justify-content: center;
+	position: relative;
+}
+
+.button__list {
+	display: none;
+}
+
+.button__delete {
+	display: flex;
+	cursor: pointer;
+	width: 40px;
+	height: 40px;
+	border: none;
+}
+
+.button__svg {
+	width: 30px;
+	height: 30px;
+	fill: white;
+}
+
+.button__svg:hover {
+	fill: #1877fc;
+}
+
+.dashboard__block:hover .button__list {
+	display: flex;
+	position: absolute;
+	top: 50%;
+}
+
+.dashboard__block:hover::before {
+	content: '';
+	background-color: #000;
+	opacity: 0.5;
+	width: 100%;
+	height: 100%;
+	display: block;
+	position: absolute;
+}
+
 .dashboard__img {
 	width: 200px;
 	height: 200px;
-	object-fit: contain;
+	object-fit: cover;
 }
 
 .dashboard__image {

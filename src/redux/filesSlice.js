@@ -16,7 +16,6 @@ const filesSlice = createSlice({
       state.user = null;
     },
     setFiles: (state, action) => {
-      console.log("Setting files:", action.payload);
       state.files = action.payload;
       state.fileCount = action.payload.length; // обновляем счетчик при установке файлов
     },

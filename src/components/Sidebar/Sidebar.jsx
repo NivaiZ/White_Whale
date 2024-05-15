@@ -3,7 +3,6 @@ import React, { useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { incrementFileCount, selectFileCount, setFiles } from '../../redux/filesSlice'
-
 import Loader from '../Loader/Loader'
 import styles from './sidebar.module.css'
 
@@ -29,7 +28,7 @@ export default function Sidebar({ onFileUpload }) {
 
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'https://615aa29e26d29508.mokky.dev/uploads',
+        'https://615aa29e26d29508.mokky.dev/uploads/',
         formData,
         {
           headers: {
@@ -104,7 +103,6 @@ export default function Sidebar({ onFileUpload }) {
       }));
 
       dispatch(setFiles(newFiles));
-      setUpdatedFiles(newFiles);
       onFileUpload(response.data);
     } catch (error) {
       console.error('Ошибка при загрузке файла:', error);
@@ -117,6 +115,7 @@ export default function Sidebar({ onFileUpload }) {
     e.preventDefault();
     e.stopPropagation();
   };
+
   
   return (
     <div className={styles.sidebar__block}>

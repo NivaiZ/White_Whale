@@ -7,14 +7,12 @@ const api = axios.create({
 	},
 })
 
-// Добавим функцию для извлечения токена из localStorage
 const getToken = () => {
 	return localStorage.getItem('token')
 }
 
 api.interceptors.request.use(
 	async config => {
-		// Извлекаем токен перед каждым запросом
 		const token = getToken()
 		console.log(token)
 		if (token) {
@@ -27,7 +25,6 @@ api.interceptors.request.use(
 	}
 )
 
-// Добавим функцию для сохранения токена в localStorage
 const saveToken = token => {
 	localStorage.setItem('token', token)
 }

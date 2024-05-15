@@ -89,7 +89,7 @@ export default function Registration() {
 		try {
 			// Отправка запроса на регистрацию
 			const response = await api.post(
-				'https://js-test.kitactive.ru/api/register',
+				'https://615aa29e26d29508.mokky.dev/register',
 				{
 					email: emailInputValue,
 					password: passwordInputValue,
