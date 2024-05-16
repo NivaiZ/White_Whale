@@ -2,31 +2,35 @@ import axios from 'axios'
 import React, { useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { incrementFileCount, selectFileCount, setFiles } from '../../redux/filesSlice'
+import {
+  incrementFileCount,
+  selectFileCount,
+  setFiles,
+} from '../../redux/filesSlice'
 import Loader from '../Loader/Loader'
 import styles from './sidebar.module.css'
 
 export default function Sidebar({ onFileUpload }) {
-  const dispatch = useDispatch();
-  const fileCount = useSelector((state) => selectFileCount(state));
-  const inputRef = useRef(null);
-  const [uploading, setUploading] = useState(false);
+  const dispatch = useDispatch()
+  const fileCount = useSelector(state => selectFileCount(state))
+  const inputRef = useRef(null)
+  const [uploading, setUploading] = useState(false)
 
-  const handleFileChange = async (e) => {
+  const handleFileChange = async e => {
     try {
-      const file = e.target.files[0];
+      const files = e.target.files
 
-      if (!file) {
-        console.error('Файл не выбран');
-        return;
+      if (!files.length) {
+        console.error('Файлы не выбраны')
+        return
       }
 
-      setUploading(true);
+      setUploading(true)
 
-      const formData = new FormData();
-      formData.append('file', file);
+      const formData = new FormData()
+      Array.from(files).forEach(file => formData.append('file', file))
 
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token')
       const response = await axios.post(
         'https://615aa29e26d29508.mokky.dev/uploads/',
         formData,
@@ -36,54 +40,54 @@ export default function Sidebar({ onFileUpload }) {
             Authorization: `Bearer ${token}`,
           },
         }
-      );
+      )
 
-      console.log('Response from server:', response.data);
+      console.log('Response from server:', response.data)
 
       if (Array.isArray(response.data)) {
-        const newFiles = response.data.map((file) => ({
+        const newFiles = response.data.map(file => ({
           id: file.id,
           url: file.url,
-        }));
+        }))
 
-        dispatch(setFiles(newFiles));
-        dispatch(incrementFileCount(newFiles.length));
+        dispatch(setFiles(newFiles))
+        dispatch(incrementFileCount(newFiles.length))
 
-        console.log('Файлы успешно загружены!');
+        console.log('Файлы успешно загружены!')
       } else if (response.data && response.data.url) {
-        const newFile = { id: response.data.id, url: response.data.url };
+        const newFile = { id: response.data.id, url: response.data.url }
 
-        dispatch(setFiles([newFile]));
-        dispatch(incrementFileCount(1));
+        dispatch(setFiles([newFile]))
+        dispatch(incrementFileCount(1))
 
-        console.log('Файл успешно загружен!');
+        console.log('Файл успешно загружен!')
       } else {
-        console.error('Некорректный ответ от сервера:', response.data);
+        console.error('Некорректный ответ от сервера:', response.data)
       }
     } catch (error) {
-      console.error('Ошибка при загрузке файла:', error);
+      console.error('Ошибка при загрузке файла:', error)
     } finally {
-      setUploading(false);
+      setUploading(false)
     }
-  };
+  }
 
-  const handleDrop = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleDrop = async e => {
+    e.preventDefault()
+    e.stopPropagation()
 
     try {
-      const file = e.dataTransfer.files[0];
+      const files = e.dataTransfer.files
 
-      if (!file) {
-        console.error('Файл не выбран');
-        return;
+      if (!files.length) {
+        console.error('Файлы не выбраны')
+        return
       }
 
-      const formData = new FormData();
-      formData.append('file', file);
+      const formData = new FormData()
+      Array.from(files).forEach(file => formData.append('file', file))
 
-      setUploading(true);
-      const token = localStorage.getItem('token');
+      setUploading(true)
+      const token = localStorage.getItem('token')
       const response = await axios.post(
         'https://615aa29e26d29508.mokky.dev/uploads',
         formData,
@@ -93,30 +97,30 @@ export default function Sidebar({ onFileUpload }) {
             Authorization: `Bearer ${token}`,
           },
         }
-      );
+      )
 
-      console.log('Файл успешно загружен!');
-      const newFiles = response.data.files.map((file) => ({
+      console.log('Файлы успешно загружены!')
+      const newFiles = response.data.files.map(file => ({
         name: file.name,
         lastModified: file.lastModified,
         // Другие свойства файла, которые вам нужны
-      }));
+      }))
 
-      dispatch(setFiles(newFiles));
-      onFileUpload(response.data);
+      dispatch(setFiles(newFiles))
+      dispatch(incrementFileCount(newFiles.length))
+      onFileUpload(response.data)
     } catch (error) {
-      console.error('Ошибка при загрузке файла:', error);
+      console.error('Ошибка при загрузке файла:', error)
     } finally {
-      setUploading(false);
+      setUploading(false)
     }
-  };
+  }
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
+  const handleDragOver = e => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
 
-  
   return (
     <div className={styles.sidebar__block}>
       <div
@@ -136,7 +140,15 @@ export default function Sidebar({ onFileUpload }) {
               <path d='M440-200h80v-167l64 64 56-57-160-160-160 160 57 56 63-63v167ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z' />
             </svg>
             <span className={styles.sidebar__sign}>
-              {uploading ? <Loader /> : fileCount > 10 ? 'Макс. 10 файлов' : `Перетащите файл сюда (${fileCount}/10)`}
+              {uploading ? (
+                <Loader />
+              ) : fileCount === 1 ? (
+                `Перетащите файл сюда (${fileCount}/10)`
+              ) : fileCount > 10 ? (
+                'Макс. 10 файлов'
+              ) : (
+                `Перетащите файлы сюда (${fileCount}/10)`
+              )}
             </span>
           </div>
           <input

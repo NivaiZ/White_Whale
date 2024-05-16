@@ -5,8 +5,8 @@ const filesSlice = createSlice({
   name: 'files',
   initialState: {
     user: null,
-    files: [],
-    fileCount: 0, // добавляем счетчик в состояние
+    files: [], // Инициализация пустым массивом
+    fileCount: 0,
   },
   reducers: {
     setUser: (state, action) => {
@@ -17,7 +17,7 @@ const filesSlice = createSlice({
     },
     setFiles: (state, action) => {
       state.files = action.payload;
-      state.fileCount = action.payload.length; // обновляем счетчик при установке файлов
+      state.fileCount = action.payload.length;
     },
     incrementFileCount: (state, action) => {
       state.fileCount += action.payload;

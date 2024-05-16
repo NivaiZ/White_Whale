@@ -25,61 +25,58 @@ export default function Dashboard() {
 	}
 
 	const handleFileUpload = async (uploadedFiles) => {
-		try {
-			console.log('Uploaded Files:', uploadedFiles)
-			const newFiles = uploadedFiles.map((file) => ({
-				id: file.id,
-				url: file.url,
-			}))
+    try {
+        console.log('Uploaded Files:', uploadedFiles);
+        const newFiles = uploadedFiles.map((file) => ({
+            id: file.id,
+            url: file.url,
+        }));
 
-			dispatch((state) => {
-				const currentFiles = selectFiles(state)
-				const updatedFiles = [...currentFiles, ...newFiles]
-				return setFiles(updatedFiles)
-			})
-		} catch (error) {
-			console.error('Error updating files:', error)
-		}
-	}
-
-	const handleDeleteFile = async (fileId) => {
-  try {
-    const token = localStorage.getItem('token');
-
-    // Проверяем существование файла и получаем информацию о нем
-    const response = await axios.get(`https://615aa29e26d29508.mokky.dev/uploads/${fileId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const fileToDelete = response.data;
-
-    // Проверяем, что файл существует
-    if (!fileToDelete) {
-      console.error('File not found:', fileId);
-      return;
+        dispatch((state) => {
+            const currentFiles = selectFiles(state);
+            const updatedFiles = [...currentFiles, ...newFiles];
+            dispatch(setFiles(updatedFiles)); // Исправлено
+        });
+    } catch (error) {
+        console.error('Error updating files:', error);
     }
-
-    // Отправляем запрос на удаление файла
-    const deleteResponse = await axios.delete(`https://615aa29e26d29508.mokky.dev/uploads/${fileId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    console.log('File deleted successfully:', deleteResponse.data);
-
-    // Обновляем состояние Redux, исключив удаленный файл
-    dispatch((state) => {
-      const currentFiles = selectFiles(state);
-      const updatedFiles = currentFiles.filter((file) => file.id !== fileId);
-      return setFiles(updatedFiles);
-    });
-  } catch (error) {
-    console.error('Error deleting file:', error);
-  }
 };
+
+const handleDeleteFile = async (fileId) => {
+    try {
+        const token = localStorage.getItem('token');
+
+        const response = await axios.get(`https://615aa29e26d29508.mokky.dev/uploads/${fileId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const fileToDelete = response.data;
+
+        if (!fileToDelete) {
+            console.error('File not found:', fileId);
+            return;
+        }
+
+        const deleteResponse = await axios.delete(`https://615aa29e26d29508.mokky.dev/uploads/${fileId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        console.log('File deleted successfully:', deleteResponse.data);
+
+        dispatch((dispatch, getState) => {
+            const currentFiles = selectFiles(getState());
+            if (!currentFiles) {
+                console.error('Files state is undefined');
+                return;
+            }
+            const updatedFiles = currentFiles.filter((file) => file.id !== fileId);
+            dispatch(setFiles(updatedFiles));
+        });
+    } catch (error) {
+        console.error('Error deleting file:', error);
+    }
+};
+
 	useEffect(() => {
 		console.log('Files from Redux store:', files)
 		const fetchData = async () => {
