@@ -18,17 +18,17 @@ export default function Sidebar({ onFileUpload }) {
 
   const handleFileChange = async e => {
     try {
-      const files = e.target.files
+      const file = e.target.files[0]
 
-      if (!files.length) {
-        console.error('Файлы не выбраны')
+      if (!file) {
+        console.error('Файл не выбран')
         return
       }
 
       setUploading(true)
 
       const formData = new FormData()
-      Array.from(files).forEach(file => formData.append('file', file))
+      formData.append('file', file)
 
       const token = localStorage.getItem('token')
       const response = await axios.post(
@@ -76,15 +76,15 @@ export default function Sidebar({ onFileUpload }) {
     e.stopPropagation()
 
     try {
-      const files = e.dataTransfer.files
+      const file = e.dataTransfer.files[0]
 
-      if (!files.length) {
-        console.error('Файлы не выбраны')
+      if (!file) {
+        console.error('Файл не выбран')
         return
       }
 
       const formData = new FormData()
-      Array.from(files).forEach(file => formData.append('file', file))
+      formData.append('file', file)
 
       setUploading(true)
       const token = localStorage.getItem('token')
@@ -99,7 +99,7 @@ export default function Sidebar({ onFileUpload }) {
         }
       )
 
-      console.log('Файлы успешно загружены!')
+      console.log('Файл успешно загружен!')
       const newFiles = response.data.files.map(file => ({
         name: file.name,
         lastModified: file.lastModified,
@@ -107,7 +107,6 @@ export default function Sidebar({ onFileUpload }) {
       }))
 
       dispatch(setFiles(newFiles))
-      dispatch(incrementFileCount(newFiles.length))
       onFileUpload(response.data)
     } catch (error) {
       console.error('Ошибка при загрузке файла:', error)

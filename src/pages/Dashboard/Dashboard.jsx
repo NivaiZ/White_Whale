@@ -11,7 +11,7 @@ import styles from './dashboard.module.css'
 export default function Dashboard() {
 	const dispatch = useDispatch()
 	const [isActive, setIsActive] = useState(false)
-	const files = useSelector(selectFiles) // Измените эту строку
+	const files = useSelector(selectFiles);
 	const filesLength = files ? files.length : 0
 	const token = localStorage.getItem('token')
 
@@ -23,59 +23,49 @@ export default function Dashboard() {
 	const handleLinkClick = () => {
 		setIsActive(true)
 	}
-
-	const handleFileUpload = async (uploadedFiles) => {
-    try {
-        console.log('Uploaded Files:', uploadedFiles);
-        const newFiles = uploadedFiles.map((file) => ({
-            id: file.id,
-            url: file.url,
-        }));
-
-        dispatch((state) => {
-            const currentFiles = selectFiles(state);
-            const updatedFiles = [...currentFiles, ...newFiles];
-            dispatch(setFiles(updatedFiles)); // Исправлено
-        });
-    } catch (error) {
-        console.error('Error updating files:', error);
-    }
-};
-
-const handleDeleteFile = async (fileId) => {
-    try {
-        const token = localStorage.getItem('token');
-
-        const response = await axios.get(`https://615aa29e26d29508.mokky.dev/uploads/${fileId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const fileToDelete = response.data;
-
-        if (!fileToDelete) {
-            console.error('File not found:', fileId);
-            return;
-        }
-
-        const deleteResponse = await axios.delete(`https://615aa29e26d29508.mokky.dev/uploads/${fileId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-
-        console.log('File deleted successfully:', deleteResponse.data);
-
-        dispatch((dispatch, getState) => {
-            const currentFiles = selectFiles(getState());
-            if (!currentFiles) {
-                console.error('Files state is undefined');
-                return;
-            }
-            const updatedFiles = currentFiles.filter((file) => file.id !== fileId);
-            dispatch(setFiles(updatedFiles));
-        });
-    } catch (error) {
-        console.error('Error deleting file:', error);
-    }
-};
+	const handleFileUploadWrapper = (uploadedFiles) => {
+		handleFileUpload(uploadedFiles, files);
+	};
+	const handleFileUpload = async (uploadedFiles, currentFiles) => {
+		try {
+			const newFiles = uploadedFiles.map((file) => ({
+				id: file.id,
+				url: file.url,
+			}));
+	
+			// Обновляем состояние файлов
+			dispatch(setFiles([...currentFiles, ...newFiles]));
+		} catch (error) {
+			console.error('Error updating files:', error);
+		}
+	}
+	
+	const handleDeleteFile = async (fileId) => {
+		try {
+			const token = localStorage.getItem('token');
+			const response = await axios.get(`https://615aa29e26d29508.mokky.dev/uploads/${fileId}`, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+	
+			const fileToDelete = response.data;
+			if (!fileToDelete) {
+				console.error('File not found:', fileId);
+				return;
+			}
+	
+			await axios.delete(`https://615aa29e26d29508.mokky.dev/uploads/${fileId}`, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+	
+			dispatch((dispatch, getState) => {
+				const currentFiles = selectFiles(getState());
+				const updatedFiles = currentFiles.filter((file) => file.id !== fileId);
+				dispatch(setFiles(updatedFiles));
+			});
+		} catch (error) {
+			console.error('Error deleting file:', error);
+		}
+	};
 
 	useEffect(() => {
 		console.log('Files from Redux store:', files)
@@ -93,7 +83,7 @@ const handleDeleteFile = async (fileId) => {
 				console.error('Ошибка при получении файлов:', error)
 			}
 		}
-		
+
 		fetchData()
 	}, [dispatch])
 
@@ -176,7 +166,7 @@ const handleDeleteFile = async (fileId) => {
 										<ul className={styles.button__list}>
 
 											<li className={styles.button__item}>
-												<button className={styles.button__delete} type='button'  onClick={() => handleDeleteFile(file.id)}>
+												<button className={styles.button__delete} type='button' onClick={() => handleDeleteFile(file.id)}>
 													<svg className={styles.button__svg} xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z" /></svg>
 												</button>
 											</li>
