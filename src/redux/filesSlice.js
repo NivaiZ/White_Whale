@@ -19,13 +19,17 @@ const filesSlice = createSlice({
       state.files = action.payload;
       state.fileCount = action.payload.length;
     },
+    addFiles: (state, action) => {
+      state.files = [...state.files, ...action.payload];
+      state.fileCount += action.payload.length;
+    },
     incrementFileCount: (state, action) => {
       state.fileCount += action.payload;
     },
   },
 });
 
-export const { setUser, logoutUser, setFiles, incrementFileCount } = filesSlice.actions;
+export const { setUser, logoutUser, setFiles, addFiles, incrementFileCount } = filesSlice.actions;
 
 export const selectUser = (state) => state.files.user;
 export const selectFiles = (state) => state.files.files;

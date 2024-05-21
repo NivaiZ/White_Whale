@@ -1,3 +1,4 @@
+// sidebar
 import axios from 'axios'
 import React, { useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -6,6 +7,7 @@ import {
   incrementFileCount,
   selectFileCount,
   setFiles,
+  addFiles
 } from '../../redux/filesSlice'
 import Loader from '../Loader/Loader'
 import styles from './sidebar.module.css'
@@ -50,14 +52,14 @@ export default function Sidebar({ onFileUpload }) {
           url: file.url,
         }))
 
-        dispatch(setFiles(newFiles))
+        dispatch(addFiles(newFiles))
         dispatch(incrementFileCount(newFiles.length))
 
         console.log('Файлы успешно загружены!')
       } else if (response.data && response.data.url) {
         const newFile = { id: response.data.id, url: response.data.url }
 
-        dispatch(setFiles([newFile]))
+        dispatch(addFiles([newFile]))
         dispatch(incrementFileCount(1))
 
         console.log('Файл успешно загружен!')
