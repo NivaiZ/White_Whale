@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import api, { saveToken } from '../../api'
+import api from '../../api'
 import Header from '../../components/Header/Header'
 import styles from './authorization.module.css'
+import { saveToken } from '../../lib/token'
 /**
  * Компонент для отображения формы регистрации.
  * @returns {JSX.Element} Элемент JSX для рендера компонента.

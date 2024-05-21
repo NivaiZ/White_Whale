@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getToken } from './lib/token'
 
 const api = axios.create({
 	baseURL: import.meta.env.VITE_REACT_APP_API_DOMAIN,
@@ -6,10 +7,6 @@ const api = axios.create({
 		'Content-Type': 'application/json',
 	},
 })
-
-const getToken = () => {
-	return localStorage.getItem('token')
-}
 
 api.interceptors.request.use(
 	async config => {
@@ -25,13 +22,4 @@ api.interceptors.request.use(
 	}
 )
 
-const saveToken = token => {
-	localStorage.setItem('token', token)
-}
-
-const removeToken = () => {
-	localStorage.removeItem('token')
-}
-
-export { getToken, removeToken, saveToken }
 export default api
