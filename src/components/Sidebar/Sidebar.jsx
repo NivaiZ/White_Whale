@@ -8,7 +8,6 @@ import {
   incrementFileCount,
   selectFileCount,
   setFiles,
-  addFiles
 } from '../../redux/filesSlice'
 import Loader from '../Loader/Loader'
 import styles from './sidebar.module.css'
