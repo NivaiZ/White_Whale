@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import api, { saveToken } from '../../api'
+import { api } from '../../api'
 import Header from '../../components/Header/Header'
+import { saveToken } from '../../lib/token'
 import styles from './authorization.module.css'
 /**
  * Компонент для отображения формы регистрации.
