@@ -3,11 +3,11 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import {api} from '../../api'
-import Sidebar from '../../components/Sidebar/Sidebar'
 import { FileCounter } from '../../components/fileCounter/fileCounter'
 import { logoutUser, selectFiles, setFiles } from '../../redux/filesSlice'
 import styles from './dashboard.module.css'
 import { removeToken } from '../../lib/token'
+import { Sidebar } from '../../components/Sidebar'
 
 export default function Dashboard() {
 	const dispatch = useDispatch()

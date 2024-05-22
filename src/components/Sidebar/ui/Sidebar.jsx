@@ -8,71 +8,69 @@ import {
   selectFileCount,
   setFiles,
   addFiles
-} from '../../redux/filesSlice'
-import Loader from '../Loader/Loader'
+} from '../../../redux/filesSlice'
+import Loader from '../../Loader/Loader'
 import styles from './sidebar.module.css'
+import {useSidebarModel} from '../model/useSidebarModel'
 
-export default function Sidebar({ onFileUpload }) {
-  const dispatch = useDispatch()
-  const fileCount = useSelector(state => selectFileCount(state))
+export function Sidebar({
+  // onFileUpload - не нужно передавать в пропсах, чисто bll метод, используй кастомный хук useModel
+}) {
+  // const dispatch = useDispatch() - нужно, но выносим в кастомный хук useModel, чтобы корректно разделять bll/ui (см ниже)
+  // const fileCount = useSelector(state => selectFileCount(state)) -  нужно, переносим в хук
   const inputRef = useRef(null)
-  const [uploading, setUploading] = useState(false)
+  // const [uploading, setUploading] = useState(false) - не нужно, переносим в redux, т.к. юзается в разных местах
 
+  /**
+   * здесь вызываем model 
+   */
+
+  const {handleFileChange, handleFileUpload, somethingElse} = useSidebarModel()
+
+  // этот метод нужно перенести в хук с model
   const handleFileChange = async e => {
-    try {
-      const file = e.target.files[0]
+    const file = e.target.files[0]
 
-      if (!file) {
-        console.error('Файл не выбран')
-        return
-      }
+      /** всё, что ниже - это bll, значит быть здесь не должно
+       * раз работаем с апи - выносим эту логику в санки 
+       * (https://redux-toolkit.js.org/api/createAsyncThunk)
+       * 
+       * логику setUploading (true/false) setError(тоже надо добавить), выносим в extraReducers санки, которую создадим
+       * логику сохранения файлов в идеале разбиваем на 3 экшна:
+       * -- setFiles (уже есть, будет использоваться только на инициализации)
+       * -- addFiles (я уже добавил)
+       * -- deleteFiles (по примеру того, что я сделал с addFiles)
+       */
+      
 
-      setUploading(true)
+    //   if (Array.isArray(response.data)) {
+    //     const newFiles = response.data.map(file => ({
+    //       id: file.id,
+    //       url: file.url,
+    //     }))
 
-      const formData = new FormData()
-      formData.append('file', file)
+    //     dispatch(addFiles(newFiles))
+    //     dispatch(incrementFileCount(newFiles.length))
 
-      const token = localStorage.getItem('token')
-      const response = await axios.post(
-        'https://615aa29e26d29508.mokky.dev/uploads/',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+    //     console.log('Файлы успешно загружены!')
+    //   } else if (response.data && response.data.url) {
+    //     const newFile = { id: response.data.id, url: response.data.url }
 
-      console.log('Response from server:', response.data)
+    //     dispatch(addFiles([newFile]))
+    //     dispatch(incrementFileCount(1))
 
-      if (Array.isArray(response.data)) {
-        const newFiles = response.data.map(file => ({
-          id: file.id,
-          url: file.url,
-        }))
-
-        dispatch(addFiles(newFiles))
-        dispatch(incrementFileCount(newFiles.length))
-
-        console.log('Файлы успешно загружены!')
-      } else if (response.data && response.data.url) {
-        const newFile = { id: response.data.id, url: response.data.url }
-
-        dispatch(addFiles([newFile]))
-        dispatch(incrementFileCount(1))
-
-        console.log('Файл успешно загружен!')
-      } else {
-        console.error('Некорректный ответ от сервера:', response.data)
-      }
-    } catch (error) {
-      console.error('Ошибка при загрузке файла:', error)
-    } finally {
-      setUploading(false)
-    }
+    //     console.log('Файл успешно загружен!')
+    //   } else {
+    //     console.error('Некорректный ответ от сервера:', response.data)
+    //   }
+    // } catch (error) {
+    //   console.error('Ошибка при загрузке файла:', error)
+    // } finally {
+    //   setUploading(false)
+    // }
   }
 
+  /** c этим методом та же история, выносим в хук и разбиваем на ui/bll/dal, лишнее выносим из хука в апи/redux */
   const handleDrop = async e => {
     e.preventDefault()
     e.stopPropagation()
@@ -122,6 +120,46 @@ export default function Sidebar({ onFileUpload }) {
     e.stopPropagation()
   }
 
+  /**
+   * в итоге выше у нас должен остаться один единственный хук, который просто обращается к model компонента, а в model лежат просто обращения к bll: селекторы, вызовы диспатчей и не больше
+   * 
+   * ui компонент максимально тупой, его методы отвечают за рендеринг
+   * и работу с browser api 
+   */
+
+  /**
+   * дублирующуюся рендер логику вынести бы в отдельный метод
+   * напр:
+   * 
+   *   const renderLink = ({ href, name, svgType }) => {
+    let svg;
+
+    switch (svgType) {
+      case 'photo':
+        svg = <svg>
+          some svg 
+          </svg>
+          break
+        case 'smth':
+          svg = <svg>
+             some svg 
+          </svg>
+          break
+        default:
+          break;
+      }
+  
+      return <li className={styles.sidebar__item}>
+        <Link className={styles.sidebar__link} to={href}>
+          <div className={styles.sidebar__group}>
+            { svg }  
+            <span className={styles.sidebar__name}>{name}</span>
+          </div>
+        </Link>
+      </li>
+    }
+   */
+
   return (
     <div className={styles.sidebar__block}>
       <div
@@ -163,8 +201,9 @@ export default function Sidebar({ onFileUpload }) {
           />
         </form>
       </div>
-
       <ul className={styles.sidebar__list}>
+        {/* здесь просто вызываем метод рендера: */}
+        {/* {renderLink()} */}
         <li className={styles.sidebar__item}>
           <Link className={styles.sidebar__link} to={'/'}>
             <div className={styles.sidebar__group}>
