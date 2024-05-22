@@ -10,25 +10,29 @@ const filesSlice = createSlice({
   },
   reducers: {
     setUser: (state, action) => {
-      state.user = action.payload;
+      state.user = action.payload
     },
     logoutUser: (state) => {
-      state.user = null;
+      state.user = null
     },
     setFiles: (state, action) => {
-      state.files = action.payload;
-      state.fileCount = action.payload.length;
+      state.files = action.payload
+      state.fileCount = action.payload.length
+    },
+    addFiles: (state, action) => {
+      state.files = [...state.files, ...action.payload]
+      state.fileCount += action.payload.length
     },
     incrementFileCount: (state, action) => {
-      state.fileCount += action.payload;
+      state.fileCount += action.payload
     },
   },
-});
+})
 
-export const { setUser, logoutUser, setFiles, incrementFileCount } = filesSlice.actions;
+export const { setUser, logoutUser, setFiles, incrementFileCount, addFiles } = filesSlice.actions
 
-export const selectUser = (state) => state.files.user;
-export const selectFiles = (state) => state.files.files;
-export const selectFileCount = (state) => state.files.fileCount;
+export const selectUser = (state) => state.files.user
+export const selectFiles = (state) => state.files.files
+export const selectFileCount = (state) => state.files.fileCount
 
-export default filesSlice.reducer;
+export default filesSlice.reducer
