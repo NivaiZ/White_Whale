@@ -1,3 +1,4 @@
+// sidebar
 import axios from 'axios'
 import React, { useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -7,6 +8,7 @@ import {
   incrementFileCount,
   selectFileCount,
   setFiles,
+  addFiles
 } from '../../redux/filesSlice'
 import Loader from '../Loader/Loader'
 import styles from './sidebar.module.css'
