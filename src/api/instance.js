@@ -1,14 +1,16 @@
 import axios from 'axios'
-import { getToken } from './lib/token'
+import { getToken } from '../lib/token'
 
-const api = axios.create({
+/** базовый конфиг апи + интерсепторы и пр, 
+ * его экспортируем в идеале только внутри апи слайсов */
+export const apiInstance = axios.create({
 	baseURL: import.meta.env.VITE_REACT_APP_API_DOMAIN,
 	headers: {
 		'Content-Type': 'application/json',
 	},
 })
 
-api.interceptors.request.use(
+apiInstance.interceptors.request.use(
 	async config => {
 		const token = getToken()
 		console.log(token)
@@ -21,5 +23,3 @@ api.interceptors.request.use(
 		return Promise.reject(error)
 	}
 )
-
-export default api
